@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "qt-hsthing"
+version = "0.1.0"
+description = ""
+authors = ["sanikk <sanikk@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+invoke = "^2.2.0"
+pyqt6 = "^6.7.0"
+watchdog = "^4.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
