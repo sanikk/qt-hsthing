@@ -1,4 +1,6 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
+
+from PyQt6.QtWidgets import QFileDialog
 
 # inheritance and type hints:
 from PyQt6.QtWidgets import QWidget
@@ -13,61 +15,92 @@ class PathTab(QWidget):
         self._path_service = path_service
 
         layout = QtWidgets.QVBoxLayout()
+        # QtWidgets.QGroupBox.creat
+        log_path_title_label = QtWidgets.QLabel('Log path')
+        layout.addWidget(log_path_title_label)
+        self.log_path_value_label = QtWidgets.QLabel(str(self._path_service.get_log_path()))
+        layout.addWidget(self.log_path_value_label)
 
-        path_title_label = QtWidgets.QLabel('Log path')
-        layout.addWidget(path_title_label)
-        # log_path_label = QtWidgets.QLabel(self._path_service.get_log_path())
+        subdir_title_label = QtWidgets.QLabel('Used subdir')
+        layout.addWidget(subdir_title_label)
+        self.subdir_value_label = QtWidgets.QLabel(str(self._path_service.get_subdir_name()))
+        layout.addWidget(self.subdir_value_label)
+
+        buttons_group = QtWidgets.QGroupBox()
+        buttons_layout = QtWidgets.QHBoxLayout()
         log_path_dialog_button = QtWidgets.QPushButton('set path')
-        layout.addWidget(log_path_dialog_button)
-        # command=self._log_path_dialog
+
+        log_path_dialog_button.clicked.connect(self.set_path)
+
+        buttons_layout.addWidget(log_path_dialog_button)
         log_path_save_button = QtWidgets.QPushButton('save path')
-        layout.addWidget(log_path_save_button)
-        # command=self._path_service.save_log_path
+
+        log_path_save_button.clicked.connect(self.save_path)
+
+        buttons_layout.addWidget(log_path_save_button)
+        subdir_reset_button = QtWidgets.QPushButton('reset subdir')
+
+        subdir_reset_button.clicked.connect(self.reset_path)
+
+        buttons_layout.addWidget(subdir_reset_button)
+        # command = self._set_subdir()
+        buttons_group.setLayout(buttons_layout)
+
+        layout.addWidget(buttons_group)
 
         self.setLayout(layout)
 
-    def _log_path_dialog(self):
-        pass
+    @QtCore.pyqtSlot()
+    def set_path(self):
+        dirname = QFileDialog.getExistingDirectory(parent=self,
+                                                   caption='Choose Logs dir',
+                                                   directory=self._path_service.get_log_path() or '.')
+        if self._path_service.set_log_path(dirname):
+            self.log_path_value_label.setText(self._path_service.get_log_path())
+
+    @QtCore.pyqtSlot()
+    def save_path(self):
+        if self._path_service.save_log_path():
+            print("Great success")
+            return
+        print("No success")
+
+    @QtCore.pyqtSlot()
+    def reset_path(self):
+        if self._path_service.set_subdir():
+            self.subdir_value_label.setText(str(self._path_service.get_subdir()))
+        # self.text.setText(random.choice(self.hello))
 
 
-def _get_log_path_box(self, master=None):
-    container = LabelFrame(master=master)
-
-    path_title_label = Label(master=container, text='Log path')
-    self.log_path_label = Label(master=container, text=self._path_service.get_log_path())
-    log_path_dialog_button = Button(master=container, text='set path', command=self._log_path_dialog)
-    log_path_save_button = Button(master=container, text='save path', command=self._path_service.save_log_path)
-
-    path_title_label.grid(row=0, column=0, sticky='ew')
-    self.log_path_label.grid(row=0, column=1)
-    log_path_dialog_button.grid(row=0, column=2, sticky='ew')
-    log_path_save_button.grid(row=0, column=3, sticky='ew')
-
-    subdir_title_label = Label(master=container, text='Used subdir')
-    self.log_subdir_label = Label(master=container, text=self._path_service.get_subdir_name())
-    subdir_reset_button = Button(master=container, text='reset subdir', command=self._set_subdir())
-
-    subdir_title_label.grid(row=1, column=0, sticky='ew')
-    self.log_subdir_label.grid(row=1, column=1)
-    subdir_reset_button.grid(row=1, column=2, sticky='ew')
-
-    return container
-
-
-
-
-class MockService:
-    def get_subdir_name(self):
-        return 'subdir name'
-
-    def get_log_path(self):
-        return '/log/path/'
-
+class ValueBox(QtWidgets.QGroupBox):
+    """
+    I want a box that displays a value and a title. Gundarnit.
+    Title is thought of as immutable here, value should be trivial to change/link.
+    """
+    def __init__(self, parent=None, title=None):
+        super().__init__(parent=parent, title=title)
+        # self.
 
 
 if __name__ == "__main__":
+    class MockService:
+        def get_subdir_name(self):
+            return 'subdir name'
+
+        def get_log_path(self):
+            return '/log/path/'
+
+        def save_log_path(self):
+            return True
+
+        def set_subdir(self):
+            return True
+
     app = QtWidgets.QApplication(sys.argv)
+    mockservice = MockService()
+
     window = PathTab(path_service=mockservice)
+
     # mabbe should calculate the actual value, 800 - padding etc, 600 - padding etc
     window.resize(800, 600)
     window.setWindowTitle('silly HS thing')
