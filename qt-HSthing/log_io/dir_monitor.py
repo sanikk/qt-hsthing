@@ -2,12 +2,15 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 
+from PyQt6.QtCore import QObject
+
 from log_io.log_reader import LogReader
 
 
-class DirectoryMonitor:
+class DirectoryMonitor(QObject):
 
     def __init__(self, directory_path, log_reader=None, data_queue=None):
+        super().__init__()
         self.observer = Observer()
         self.directory_path = directory_path
         self.data_queue = data_queue

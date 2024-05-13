@@ -21,7 +21,7 @@ class PathService:
         if not self._log_path or not self._log_path.is_dir():
             return False
         self._log_subdir = Path(str(sorted(self._log_path.iterdir())[-1]).split('Hearthstone/Logs/')[1])
-        self._log_service.start_monitor(path=self.get_subdir_path())
+        self._log_service.start_monitor(subdir_path=self.get_subdir_path())
         return True
 
     def get_subdir_path(self):

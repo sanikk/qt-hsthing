@@ -1,27 +1,39 @@
 from pathlib import Path
 from queue import Queue, Empty
+from PyQt6.QtCore import QThread, QObject, QFileSystemWatcher, pyqtSlot
 
-from log_io.dir_monitor import DirectoryMonitor
+
+class Worker(QFileSystemWatcher):
+    def __init__(self):
+        super().__init__()
+        self.fileChanged.connect(self.check_file)
+
+    @pyqtSlot(str)
+    def check_file(self, path: str):
+        if path not in self.files():
+            # file was likely deleted and recreated
+            self.addPath(path)
 
 
-class LogService:
-    def __init__(self, log_path: Path = None):
-        self.data_queue = Queue()
-        self.monitor = None
+class LogService(QObject):
+    def __init__(self):
+        super().__init__()
+        self.watcherThread = None
+        self.watcher = None
+        self.last_read = {}
 
-    # DIR_MONITOR/LOG_READER
-    def start_monitor(self, path: Path):
-        self.monitor = DirectoryMonitor(directory_path=path, data_queue=self.data_queue)
-        print("logservice starting monitor")
-        self.monitor.run()
+    def start_monitor(self, subdir_path=None):
+        if not subdir_path:
+            return
+        # let pathlib build urls, and str them out
+        filelist = [str(Path(subdir_path, a)) for a in ['Achievements.log', 'Gameplay.log', 'Power.log'] if Path(subdir_path, a).exists()]
+        self.watcherThread = QThread()
+        self.watcher = QFileSystemWatcher()
+        self.watcher.moveToThread(self.watcherThread)
+        self.watcherThread.finished.connect(self.watcherThread.deleteLater)
+        # self.wat
+        # self.watcher.fileChanged.connect(self.check_file)
+        # self.watcherThread.start()
+        # self.watcher.addPaths(filelist)
 
-    def fetch(self):
-        try:
-            path, content = self.data_queue.get(block=False)
-            print(f"log_service {path=}\n{content=}")
-            if content:
-                return content
-        except Empty:
-            pass
 
-        return None
