@@ -16,4 +16,4 @@ settings = read_settings_file()
 LOG_PATH = None
 
 if settings and settings['LOG_PATH']:
-    LOG_PATH = Path(settings['LOG_PATH'])
+    LOG_PATH = settings['LOG_PATH']

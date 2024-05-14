@@ -25,30 +25,29 @@ class PathTab(QWidget):
         self.subdir_value_label = QtWidgets.QLabel(self._path_service.get_subdir_name())
         layout.addWidget(self.subdir_value_label)
 
-        buttons_group = QtWidgets.QGroupBox()
-        buttons_layout = QtWidgets.QHBoxLayout()
-        log_path_dialog_button = QtWidgets.QPushButton('set path')
-
-        log_path_dialog_button.clicked.connect(self.set_path)
-
-        buttons_layout.addWidget(log_path_dialog_button)
-        log_path_save_button = QtWidgets.QPushButton('save path')
-
-        log_path_save_button.clicked.connect(self.save_path)
-
-        buttons_layout.addWidget(log_path_save_button)
-        subdir_reset_button = QtWidgets.QPushButton('reset subdir')
-
-        subdir_reset_button.clicked.connect(self.reset_path)
-
-        buttons_layout.addWidget(subdir_reset_button)
-        # command = self._set_subdir()
-        buttons_group.setLayout(buttons_layout)
-
+        buttons_group = self.get_buttons_group_box()
         layout.addWidget(buttons_group)
 
         self.setLayout(layout)
 
+    def get_buttons_group_box(self):
+        buttons_group = QtWidgets.QGroupBox()
+        buttons_layout = QtWidgets.QHBoxLayout()
+
+        log_path_dialog_button = QtWidgets.QPushButton('set path')
+        log_path_dialog_button.clicked.connect(self.set_path)
+        buttons_layout.addWidget(log_path_dialog_button)
+
+        log_path_save_button = QtWidgets.QPushButton('save path')
+        log_path_save_button.clicked.connect(self.save_path)
+        buttons_layout.addWidget(log_path_save_button)
+
+        subdir_reset_button = QtWidgets.QPushButton('reset subdir')
+        subdir_reset_button.clicked.connect(self.reset_path)
+        buttons_layout.addWidget(subdir_reset_button)
+
+        buttons_group.setLayout(buttons_layout)
+        return buttons_group
     def set_path(self):
         dirname = QFileDialog.getExistingDirectory(parent=self,
                                                    caption='Choose Logs dir',
