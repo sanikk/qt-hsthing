@@ -17,15 +17,14 @@ class PathService:
         self.set_subdir()
 
     def set_subdir(self):
-
         if not self._log_path:
             return False
         log_path = Path(self._log_path)
         if not log_path.is_dir():
             return False
 
+        # take last of the files, sorted by name (includes date), and split it, to get the part we want
         self._log_subdir = str(sorted(log_path.iterdir())[-1]).split('Hearthstone/Logs/')[1]
-        # self._log_subdir = Path(str(sorted(self._log_path.iterdir())[-1]).split('Hearthstone/Logs/')[1])
         self._log_service.start_worker(subdir_path=self.get_full_subdir_path())
         return True
 

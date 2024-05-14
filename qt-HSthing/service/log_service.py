@@ -6,16 +6,14 @@ from log_io.log_reader_worker import LogReaderWorker
 class LogService(QObject):
     start_monitor = pyqtSignal()
     stop_monitor = pyqtSignal()
-    # add_path = pyqtSignal(str)
+    add_path = pyqtSignal(str)
 
     def __init__(self, subdir_path: str = None):
         super().__init__()
-        print('main running in:', QThread.currentThread())
 
-        self.files_to_watch = []
-        self._make_filepaths(subdir_path)
+        files = self._make_filepaths(subdir_path=subdir_path)
 
-        self.worker = LogReaderWorker(paths=self.files_to_watch)
+        self.worker = LogReaderWorker(paths=files)
         self.worker.connect(self)
         self.thread = QThread()
 
@@ -28,17 +26,19 @@ class LogService(QObject):
 
     def _make_filepaths(self, subdir_path=None):
         if not subdir_path:
-            return
+            return None
         filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
-        self.files_to_watch = [Path(subdir_path, file) for file in filenames]
+        return {str(Path(subdir_path, file)) for file in filenames}
 
     # LogReaderWorker stuff
     def start_worker(self, subdir_path=None):
         if subdir_path:
-            self._make_filepaths(subdir_path)
+            filepaths = self._make_filepaths(subdir_path)
+            for filepath in filepaths:
+                self.add_path.emit(filepath)
 
-        print("main: sending start signal")
-        self.start_monitor.emit()
+            print("main: sending start signal")
+            self.start_monitor.emit()
 
     def stop_worker(self):
         print("main: sending stop signal")

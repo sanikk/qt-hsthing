@@ -6,21 +6,22 @@ class LogReaderWorker(QObject):
     monitor_stopped = pyqtSignal()
     text_ready = pyqtSignal(str)
 
-    def __init__(self, paths=None):
+    def __init__(self, paths: set[str] = None):
         super().__init__()
         self.monitor = None
-        self.paths = paths
+        self.paths = paths or set()
 
     def connect(self, connectee: QObject):
         connectee.start_monitor.connect(self.start_monitor)
         connectee.stop_monitor.connect(self.stop_monitor)
+        connectee.add_path.connect(self.add_path)
 
     @pyqtSlot()
     def start_monitor(self):
         if self.paths:
             print('Worker started in:', QThread.currentThread())
             self.monitor = QFileSystemWatcher(self.paths)
-            print(f"{self.monitor.files()}")
+            print(f"{self.monitor.files()=}")
             self.monitor_started.emit()
             self.monitor.fileChanged.connect(self.check_file)
         else:
@@ -44,4 +45,10 @@ class LogReaderWorker(QObject):
         self.deleteLater()
         self.monitor_stopped.emit()
 
+    @pyqtSlot(str)
+    def add_path(self, new_path):
+        if not self.paths:
+            self.paths = set()
+        if new_path:
+            self.paths.add(new_path)
 
