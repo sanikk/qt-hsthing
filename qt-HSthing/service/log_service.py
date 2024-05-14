@@ -8,7 +8,7 @@ class LogService(QObject):
     stop_monitor = pyqtSignal()
     # add_path = pyqtSignal(str)
 
-    def __init__(self, subdir_path=None):
+    def __init__(self, subdir_path: str = None):
         super().__init__()
         print('main running in:', QThread.currentThread())
 
@@ -53,7 +53,6 @@ class LogService(QObject):
         print("main: everything done, cleaning up")
         self.thread.quit()
         self.thread.wait()
-        self.close()
 
     @pyqtSlot(str)
     def onTextReady(self, text):
