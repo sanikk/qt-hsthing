@@ -1,27 +1,48 @@
+from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject, QThread
 from pathlib import Path
-from queue import Queue, Empty
-
-from log_io.dir_monitor import DirectoryMonitor
+from log_io.log_reader_worker import LogReaderWorker
 
 
-class LogService:
-    def __init__(self, log_path: Path = None):
-        self.data_queue = Queue()
-        self.monitor = None
+class LogService(QObject):
+    start_monitor = pyqtSignal()
+    stop_monitor = pyqtSignal()
+    add_path = pyqtSignal(str)
 
-    # DIR_MONITOR/LOG_READER
-    def start_monitor(self, path: Path):
-        self.monitor = DirectoryMonitor(directory_path=path, data_queue=self.data_queue)
-        print("logservice starting monitor")
-        self.monitor.run()
+    def __init__(self, subdir_path: str = None):
+        super().__init__()
 
-    def fetch(self):
-        try:
-            path, content = self.data_queue.get(block=False)
-            print(f"log_service {path=}\n{content=}")
-            if content:
-                return content
-        except Empty:
-            pass
+        self.worker = LogReaderWorker(path=subdir_path)
+        self.worker.connect(self)
+        self.thread = QThread()
 
-        return None
+        self.worker.monitor_started.connect(self.onWorkerStarted)
+        self.worker.monitor_stopped.connect(self.onWorkerStopped)
+        self.worker.text_ready.connect(self.onTextReady)
+
+        self.worker.moveToThread(self.thread)
+        self.thread.start()
+
+    # LogReaderWorker stuff
+    def start_worker(self, subdir_path=None):
+        if subdir_path:
+            self.add_path.emit(subdir_path)
+            print("main: sending start signal")
+            self.start_monitor.emit()
+
+    def stop_worker(self):
+        print("main: sending stop signal")
+        self.stop_monitor.emit()
+
+    @pyqtSlot()
+    def onWorkerStarted(self):
+        print("main: worker has started in another thread")
+
+    @pyqtSlot()
+    def onWorkerStopped(self):
+        print("main: everything done, cleaning up")
+        self.thread.quit()
+        self.thread.wait()
+
+    @pyqtSlot(str)
+    def onTextReady(self, text):
+        print(f"main: received text {text}")
