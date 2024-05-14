@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QTextEdit, QWidget
 class LogTab(QTextEdit):
     def __init__(self, parent: QWidget = None, log_service=None):
         super().__init__(parent=parent)
-        self.log_service = log_service
+        self._log_service = log_service
 
         self.setReadOnly(True)
 

@@ -1,20 +1,14 @@
-from PyQt6 import QtWidgets, QtCore
-
-# inheritance and type hints:
-from PyQt6.QtWidgets import QWidget
-
-import random
+from PyQt6.QtWidgets import QTabWidget, QWidget
+# tähän oli joku QArgumentsParser tms
 import sys
 
 from ui.path_tab import PathTab
 from ui.log_tab import LogTab
 
 
-class TabWindow(QtWidgets.QTabWidget):
+class TabWindow(QTabWidget):
     def __init__(self, parent: QWidget = None, path_service=None, log_service=None):
         super().__init__(parent=parent)
-        self.path_service = path_service
-        self.log_service = log_service
 
         self.resize(800, 600)
         self.setWindowTitle('silly HS thing')
@@ -26,7 +20,8 @@ class TabWindow(QtWidgets.QTabWidget):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    from PyQt6.QtWidgets import QApplication
+    app = QApplication(sys.argv)
     window = TabWindow()
     window.setWindowTitle('silly HS thing')
     window.show()
