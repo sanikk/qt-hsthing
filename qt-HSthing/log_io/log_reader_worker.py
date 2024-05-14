@@ -39,7 +39,8 @@ class LogReaderWorker(QObject):
     @pyqtSlot()
     def stop_monitor(self):
         print("worker stop signal received")
-        self.monitor.removePaths(self.paths)
+        if self.monitor:
+            self.monitor.removePaths(self.paths)
         self.deleteLater()
         self.monitor_stopped.emit()
 
