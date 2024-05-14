@@ -11,19 +11,18 @@ import sys
 class PathTab(QWidget):
     def __init__(self, parent=None, path_service=None):
         super().__init__(parent=parent)
-
         self._path_service = path_service
 
         layout = QtWidgets.QVBoxLayout()
-        # QtWidgets.QGroupBox.creat
+
         log_path_title_label = QtWidgets.QLabel('Log path')
         layout.addWidget(log_path_title_label)
-        self.log_path_value_label = QtWidgets.QLabel(str(self._path_service.get_log_path()))
+        self.log_path_value_label = QtWidgets.QLabel(self._path_service.get_log_path())
         layout.addWidget(self.log_path_value_label)
 
         subdir_title_label = QtWidgets.QLabel('Used subdir')
         layout.addWidget(subdir_title_label)
-        self.subdir_value_label = QtWidgets.QLabel(str(self._path_service.get_subdir_name()))
+        self.subdir_value_label = QtWidgets.QLabel(self._path_service.get_subdir_name())
         layout.addWidget(self.subdir_value_label)
 
         buttons_group = QtWidgets.QGroupBox()
@@ -50,32 +49,37 @@ class PathTab(QWidget):
 
         self.setLayout(layout)
 
-    @QtCore.pyqtSlot()
     def set_path(self):
         dirname = QFileDialog.getExistingDirectory(parent=self,
                                                    caption='Choose Logs dir',
                                                    directory=self._path_service.get_log_path() or '.')
-        if self._path_service.set_log_path(dirname):
-            self.log_path_value_label.setText(self._path_service.get_log_path())
+        if dirname:
+            self._path_service.set_log_path(dirname)
+            self.log_path_value_label.setText(dirname)
 
-    @QtCore.pyqtSlot()
     def save_path(self):
         if self._path_service.save_log_path():
             print("Great success")
             return
         print("No success")
 
-    @QtCore.pyqtSlot()
     def reset_path(self):
         if self._path_service.set_subdir():
             self.subdir_value_label.setText(str(self._path_service.get_subdir()))
-        # self.text.setText(random.choice(self.hello))
 
 
 class ValueBox(QtWidgets.QGroupBox):
     """
     I want a box that displays a value and a title. Gundarnit.
     Title is thought of as immutable here, value should be trivial to change/link.
+
+    #####################################
+    #title                              #
+    #####################################
+    #                                   #
+    # VALUE                             #
+    #                                   #
+    #####################################
     """
     def __init__(self, parent=None, title=None):
         super().__init__(parent=parent, title=title)

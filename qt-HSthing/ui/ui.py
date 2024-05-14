@@ -10,6 +10,7 @@ from ui.log_tab import LogTab
 class TabWindow(QTabWidget):
     def __init__(self, parent: QWidget = None, path_service=None, log_service=None):
         super().__init__(parent=parent)
+        # need this to exit cleanly?
         self._log_service = log_service
 
         self.resize(800, 600)
