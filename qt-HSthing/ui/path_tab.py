@@ -64,7 +64,7 @@ class PathTab(QWidget):
 
     def reset_path(self):
         if self._path_service.set_subdir():
-            self.subdir_value_label.setText(str(self._path_service.get_subdir()))
+            self.subdir_value_label.setText(self._path_service.get_subdir_name())
 
 
 class ValueBox(QtWidgets.QGroupBox):

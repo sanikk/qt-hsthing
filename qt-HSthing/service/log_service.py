@@ -11,9 +11,7 @@ class LogService(QObject):
     def __init__(self, subdir_path: str = None):
         super().__init__()
 
-        files = self._make_filepaths(subdir_path=subdir_path)
-
-        self.worker = LogReaderWorker(paths=files)
+        self.worker = LogReaderWorker(path=subdir_path)
         self.worker.connect(self)
         self.thread = QThread()
 
@@ -24,19 +22,10 @@ class LogService(QObject):
         self.worker.moveToThread(self.thread)
         self.thread.start()
 
-    def _make_filepaths(self, subdir_path=None):
-        if not subdir_path:
-            return None
-        filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
-        return {str(Path(subdir_path, file)) for file in filenames}
-
     # LogReaderWorker stuff
     def start_worker(self, subdir_path=None):
         if subdir_path:
-            filepaths = self._make_filepaths(subdir_path)
-            for filepath in filepaths:
-                self.add_path.emit(filepath)
-
+            self.add_path.emit(subdir_path)
             print("main: sending start signal")
             self.start_monitor.emit()
 
