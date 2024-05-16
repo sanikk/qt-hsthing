@@ -9,6 +9,8 @@ from service.log_service import LogService
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    # make output unbuffered
+    sys.stdout.reconfigure(line_buffering=True)
 
     log_service = LogService()
     path_service = PathService(log_service=log_service)

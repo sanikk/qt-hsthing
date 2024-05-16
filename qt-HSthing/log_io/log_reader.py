@@ -23,7 +23,7 @@ class LogReader:
     def _make_tuples(self):
         files = ['Achievements.log', 'Gameplay.log', 'Power.log']
         self.paths = [Path(self.log_dir_path, file) for file in files]
-        self.last_positions = {path: path.stat().st_size for path in self.paths}
+        self.last_positions = {path: path.stat().st_size if path.exists() else 0 for path in self.paths}
 
     def read_log(self, path):
         pathed = Path(path)
