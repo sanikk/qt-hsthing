@@ -3,17 +3,16 @@ from PyQt6.QtCore import pyqtSignal, QObject, QFileSystemWatcher, QThread, pyqtS
 
 class LogReaderWorker(QObject):
     """
-    ach. tää varaa nyt kuitenkin noi tiedostot, eli katsotaan directorya, ja poimitaan sieltä mitä tarvitaan..
-    sitten tänne tarvitaan vaan subdir path, ja tiedostonimet voi olla täällä.
+    ach. tää varaa nyt kuitenkin noi tiedostot.
     """
     monitor_started = pyqtSignal()
     monitor_stopped = pyqtSignal()
     text_ready = pyqtSignal(str)
 
-    def __init__(self, path: str = None):
+    def __init__(self, sub_dir_path: str = None):
         super().__init__()
         self.monitor = None
-        self.path = path
+        self.path = sub_dir_path
         self.filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
 
     def connect(self, connectee: QObject):
@@ -36,7 +35,6 @@ class LogReaderWorker(QObject):
 
     @pyqtSlot(str)
     def check_file(self, path: str):
-        print("worker check_file fired")
         if path not in self.monitor.directories():
             # file was likely deleted and recreated
             # ok i dont know why this would happen with a dir

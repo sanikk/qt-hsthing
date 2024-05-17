@@ -1,5 +1,3 @@
-# toistaiseksi sleep/wait timestä
-import time
 from pathlib import Path
 
 
@@ -11,19 +9,20 @@ class LogReader:
     :return:
     """
 
-    def __init__(self, log_dir_path: Path):
+    def __init__(self, sub_dir_path: str = None):
         """
         :param logfile_path: directory containing logfile as Path object.
         :param logfile_name:  name of logfile to watch, shouldnt change. Should accept Path or string.
         """
-        self.log_dir_path = log_dir_path
+        self.sub_dir_path = sub_dir_path
         self._tuples = None
-        self._make_tuples()
+        self._make_lists_and_dicts()
 
-    def _make_tuples(self):
+    def _make_lists_and_dicts(self):
         files = ['Achievements.log', 'Gameplay.log', 'Power.log']
-        self.paths = [Path(self.log_dir_path, file) for file in files]
-        self.last_positions = {path: path.stat().st_size for path in self.paths}
+        # kas gameplay.logia ei ole ennen kuin käynnistää pelin
+        self.paths = [Path(self.sub_dir_path, file) for file in files]
+        self.last_positions = {path: path.stat().st_size if path.exists() else 0 for path in self.paths}
 
     def read_log(self, path):
         pathed = Path(path)
