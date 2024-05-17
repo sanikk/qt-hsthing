@@ -22,8 +22,8 @@ class TabWindow(QTabWidget):
         self.addTab(log_tab, 'log tab')
 
     def closeEvent(self, event: QCloseEvent):
-        self._log_service.stop_worker()
-        self._log_service.onWorkerStopped()
+        self._log_service.stop_reading()
+        # self._log_service.onWorkerStopped()
         event.accept()
 
 

@@ -3,9 +3,12 @@ import json
 
 from config import LOG_PATH
 
+from PyQt6.QtCore import QObject
 
-class PathService:
+
+class PathService(QObject):
     def __init__(self, log_path: str = None, log_service=None):
+        super().__init__()
         self._log_service = log_service
 
         # store all as _string_
@@ -25,7 +28,7 @@ class PathService:
 
         # take last of the files, sorted by name (includes date), and split it, to get the part we want
         self._log_subdir = str(sorted(log_path.iterdir())[-1]).split('Hearthstone/Logs/')[1]
-        self._log_service.start_worker(subdir_path=self.get_full_subdir_path())
+        self._log_service.start_reading(subdir_path=self.get_full_subdir_path())
         return True
 
     def get_full_subdir_path(self) -> str:
