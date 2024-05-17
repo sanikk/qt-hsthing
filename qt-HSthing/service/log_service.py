@@ -1,48 +1,42 @@
 from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject, QThread
 from pathlib import Path
-from log_io.log_reader_worker import LogReaderWorker
+
+from log_io.dir_monitor import DirMonitor, QFileSystemEventHandler
+from log_io.log_reader import LogReader
+# testi
+from watchdog.events import FileSystemEventHandler
 
 
 class LogService(QObject):
-    start_monitor = pyqtSignal()
-    stop_monitor = pyqtSignal()
-    add_path = pyqtSignal(str)
 
-    def __init__(self, subdir_path: str = None):
+    content_ready = pyqtSignal(str)
+
+    def __init__(self):
         super().__init__()
+        self.dir_monitor = None
+        self.log_reader = None
+        self.filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
 
-        self.worker = LogReaderWorker(path=subdir_path)
-        self.worker.connect(self)
-        self.thread = QThread()
+    def start_reading(self, subdir_path: str = None):
+        event_handler = QFileSystemEventHandler(filenames=self.filenames)
+        event_handler.path_has_content.connect(self.testeri)
+        if not subdir_path:
+            return
+        self.log_reader = LogReader(subdir_path)
+        self.dir_monitor = DirMonitor(subdir_path, event_handler=event_handler)
+        self.dir_monitor.run()
 
-        self.worker.monitor_started.connect(self.onWorkerStarted)
-        self.worker.monitor_stopped.connect(self.onWorkerStopped)
-        self.worker.text_ready.connect(self.onTextReady)
-
-        self.worker.moveToThread(self.thread)
-        self.thread.start()
-
-    # LogReaderWorker stuff
-    def start_worker(self, subdir_path=None):
-        if subdir_path:
-            self.add_path.emit(subdir_path)
-            print("main: sending start signal")
-            self.start_monitor.emit()
-
-    def stop_worker(self):
-        print("main: sending stop signal")
-        self.stop_monitor.emit()
-
-    @pyqtSlot()
-    def onWorkerStarted(self):
-        print("main: worker has started in another thread")
-
-    @pyqtSlot()
-    def onWorkerStopped(self):
-        print("main: everything done, cleaning up")
-        self.thread.quit()
-        self.thread.wait()
+    def stop_reading(self):
+        if self.dir_monitor:
+            self.dir_monitor.stop_reading()
+        self.deleteLater()
 
     @pyqtSlot(str)
-    def onTextReady(self, text):
-        print(f"main: received text {text}")
+    def testeri(self, filepath: str):
+        print(f"log_service {filepath=}")
+
+
+if __name__ == '__main__':
+    import PyQt6.QtCore as QtC
+    import PyQt6.QtWidgets as QtW
+    app = QtW.QApplication([])
