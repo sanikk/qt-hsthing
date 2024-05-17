@@ -1,10 +1,7 @@
-from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject, QThread
-from pathlib import Path
+from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 
 from log_io.dir_monitor import DirMonitor, QFileSystemEventHandler
 from log_io.log_reader import LogReader
-# testi
-from watchdog.events import FileSystemEventHandler
 
 
 class LogService(QObject):
@@ -31,6 +28,7 @@ class LogService(QObject):
             self.dir_monitor.stop_reading()
         self.deleteLater()
 
+    # TODO rm this, just checking for connection
     @pyqtSlot(str)
     def testeri(self, filepath: str):
         print(f"log_service {filepath=}")

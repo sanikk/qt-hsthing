@@ -20,31 +20,23 @@ class DirMonitor(QObject):
 
     new_content = pyqtSignal(str)
 
-    def __init__(self, directory_path=None, filenames=None, log_reader=None, event_handler=None):
+    def __init__(self, directory_path=None, filenames=None, event_handler=None):
         super().__init__()
         self.observer = Observer()
         self.directory_path = directory_path
         self.filenames = filenames
-        # self.log_reader = log_reader
         self.event_handler = event_handler
 
     def run(self):
-        print(f"dir_mon run {self.event_handler=}, {self.directory_path=}")
         self.observer.schedule(
-            # event_handler=Handler(dir_monitor=self, filenames=self.filenames),
             event_handler=self.event_handler,
             path=self.directory_path
         )
-        print(f"{self.observer.start()=}")
 
     def stop_reading(self):
         self.observer.stop()
         self.observer.unschedule_all()
         self.deleteLater()
-
-    # def send_content(self, content=None):
-    #     if content:
-    #         self.log_content.emit(content)
 
     def handle_new_content(self, filepath):
         print(f"handler received: {filepath=}")
@@ -66,16 +58,12 @@ class QFileSystemEventHandler(FileSystemEventHandler, QObject):
         self.filenames = filenames
 
     def on_modified(self, event) -> None:
-        print(f"{event=}")
         if event.is_directory:
             return None
-        # print(f"{event.src_path=}")
         filename = Path(event.src_path).parts[-1]
-        print(f"last bit {filename=}")
 
         if filename in self.filenames:
-            print("we have a hit!")
-            # self.dir_monitor.handle_new_content(filepath=event.src_path)
+            # print("we have a hit!")
             self.path_has_content.emit(event.src_path)
 
     def notify_about_content(self, path: str):
@@ -89,7 +77,6 @@ if __name__ == '__main__':
     filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
     log_reader = LogReader(sub_dir_path=sub_dir_path, filenames=filenames)
     # le_path = Path('/home/karpo/hd/SteamLibrary/steamapps/common/HS/Hearthstone/Logs/Hearthstone_2024_05_09_15_07_58/')
-    # (self, directory_path=None, filenames=None, log_reader=None):
     monitor = DirMonitor(directory_path=sub_dir_path, filenames=filenames,
                          log_reader=log_reader)
     monitor.run()
