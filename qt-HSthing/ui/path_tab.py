@@ -48,6 +48,7 @@ class PathTab(QWidget):
 
         buttons_group.setLayout(buttons_layout)
         return buttons_group
+
     def set_path(self):
         dirname = QFileDialog.getExistingDirectory(parent=self,
                                                    caption='Choose Logs dir',
@@ -58,9 +59,9 @@ class PathTab(QWidget):
 
     def save_path(self):
         if self._path_service.save_log_path():
-            print("Great success")
+            print("Great success. Everything is saved.")
             return
-        print("No success")
+        print("No success. None will be saved.")
 
     def reset_path(self):
         if self._path_service.set_subdir():

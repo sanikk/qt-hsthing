@@ -1,22 +1,34 @@
-from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import QTextEdit, QWidget
+from PyQt6.QtCore import pyqtSlot, pyqtSignal
 
 
 class LogTab(QTextEdit):
+    """
+    hmm
+    qtextbrowser "extends QTextEdit (in read-only mode), adding some navigation functionality so that users can
+    follow links in hypertext documents."
+
+    tota vois ihmetellä jossain välissä. popuppeja avainsanoista klikkaamalla olis ilmeisin.
+    ####################################
+    hmm toi maksimum block count olis kätevä, eli QTextDocument jonka koko on rajoitettu,
+    ja sitten täällä self.setDocument(doku). En ole varma kuinka kalliita tuon qtextdocumentim operaatiot ja
+    ylläpito on.
+    ###########################
+    phase 1
+    lisätään saadut pathit tohon tekstilaatikkoon.
+    """
     def __init__(self, parent: QWidget = None, log_service=None):
         super().__init__(parent=parent)
         self._log_service = log_service
 
         self.setReadOnly(True)
+        self.setPlaceholderText('No new log lines to show')
+        self.document().setMaximumBlockCount(100)
+        self._log_service.content_ready.connect(self.more_content)
 
-    def start_updater(self, delay=50):
-        self._ui.after(delay, self.after_callback)
-
-    def after_callback(self):
+    @pyqtSlot()
+    def more_content(self):
+        print("signal in gui")
         content = self._log_service.fetch()
-        if content:
-            print(f"ui.after_callback {content=}")
-            self.output_box.insert('end', *content)
-        self._ui.after(10, self.after_callback)
-        self.frame.update_idletasks()
+        self.insertPlainText(content)
 

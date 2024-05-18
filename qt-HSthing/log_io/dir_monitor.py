@@ -21,16 +21,20 @@ class DirMonitor(QObject):
 
     def __init__(self, directory_path=None, filenames=None, event_handler=None):
         super().__init__()
-        self.observer = Observer()
+        self.observer = ObserverWrapper()
         self.directory_path = directory_path
         self.filenames = filenames
         self.event_handler = event_handler
 
     def run(self):
+        print(f"dir_mon {self.event_handler=}")
+        print(f"dir_mon {self.directory_path=}")
         self.observer.schedule(
             event_handler=self.event_handler,
             path=self.directory_path
         )
+        # print(f"{self.observer.get_watches()}")
+        self.observer.start()
 
     def stop_reading(self):
         self.observer.stop()
@@ -40,19 +44,11 @@ class DirMonitor(QObject):
     @pyqtSlot(str)
     def signal_new_content(self, filepath):
         print(f"dir_monitor handler func received: {filepath=}")
-        # logfile, content = self.log_reader.read_log(filepath)
-        # print(f"handle_new_content {logfile=}")
-        # print(f"handle_new_content {content=}")
-        # if content:
-        #     for line in content:
-        #         self.new_content.emit(line)
 
 
-if __name__ == '__main__':
-    app = QApplication([])
-    sub_dir_path = Path()
-    filenames = ['Achievements.log', 'Gameplay.log', 'Power.log']
-    log_reader = LogReader(sub_dir_path=sub_dir_path, filenames=filenames)
-    monitor = DirMonitor(directory_path=sub_dir_path, filenames=filenames)
-    monitor.run()
-    app.exec()
+class ObserverWrapper(Observer):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(*kwargs)
+
+    def get_watches(self):
+        return self._watches
