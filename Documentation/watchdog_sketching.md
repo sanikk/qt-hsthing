@@ -18,3 +18,6 @@ handling calls when multiple identical events are produced quicker than an obser
 consume them.
 
 eli jos otan tän eventqueuen ulos tuolta ja käytän sitä luuppina niin ei kait ole ongelmaa?
+
+UPDATE: joo tein wrapperin observerille päästäkseni käsiin self._watchesiin. Hyvin toimii. Tuonne voi tietysti laittaa 
+event luupin ulostusta ja muuta.

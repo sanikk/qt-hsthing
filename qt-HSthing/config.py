@@ -1,15 +1,4 @@
-import json
-
-from pathlib import Path
-
-
-def read_settings_file():
-    settings_file = Path('./settings.ini')
-    if settings_file.exists():
-        with open('settings.ini', 'r') as f:
-            data = f.read()
-            if data:
-                return json.loads(data)
+from io_functionality.fs_utils import read_settings_file
 
 
 settings = read_settings_file()

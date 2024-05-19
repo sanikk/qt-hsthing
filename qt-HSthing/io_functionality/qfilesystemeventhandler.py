@@ -21,7 +21,8 @@ class QFileSystemEventHandler(FileSystemEventHandler, QObject):
         self.filenames = filenames
 
     def on_modified(self, event) -> None:
-        if event.is_directory or Path(event.src_path).parts[-1] not in self.filenames:
+        if event.is_directory:
             return
-
+        if Path(event.src_path).parts[-1] not in self.filenames:
+            return
         self.path_has_content.emit(event.src_path)

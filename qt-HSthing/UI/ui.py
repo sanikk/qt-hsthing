@@ -3,8 +3,8 @@ from PyQt6.QtGui import QCloseEvent
 # tähän oli joku QArgumentsParser tms
 import sys
 
-from ui.path_tab import PathTab
-from ui.log_tab import LogTab
+from UI.path_tab import PathTab
+from UI.log_tab import LogTab
 
 
 class TabWindow(QTabWidget):

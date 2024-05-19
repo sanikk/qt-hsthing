@@ -12,6 +12,9 @@ https://doc.qt.io/qt-6/threads-technologies.html
 
 https://doc.qt.io/qt-6/threads.html
 
+UPDATE: joo suljetaan ne luupit kanssa. ei paskasti kuitenkaan noilla 
+pohjilla.
+
 
 
 
