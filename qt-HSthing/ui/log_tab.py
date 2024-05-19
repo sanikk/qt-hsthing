@@ -28,7 +28,6 @@ class LogTab(QTextEdit):
 
     @pyqtSlot()
     def more_content(self):
-        print("signal in gui")
         content = self._log_service.fetch()
         self.insertPlainText(content)
 

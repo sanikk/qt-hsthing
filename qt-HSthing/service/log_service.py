@@ -24,9 +24,8 @@ class LogService(QObject):
             return
         # we make this here for ez connects
         event_handler = QFileSystemEventHandler(filenames=self.filenames)
-
-        event_handler.path_has_content.connect(self.content_ready.emit)
         event_handler.path_has_content.connect(self.set_fetch_path)
+        event_handler.path_has_content.connect(self.content_ready)
 
         self.log_reader = LogReader(subdir_path)
         self.dir_monitor = DirMonitor(subdir_path, event_handler=event_handler)
@@ -47,7 +46,9 @@ class LogService(QObject):
         self.fetch_path = path
 
     def fetch(self):
-        return self.log_reader
+        # saved here for nostalgic reasons, nvm
+        # return 'supreme data'
+        return self.log_reader.read_log_file(self.fetch_path)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,5 @@
 from watchdog.observers import Observer
-from pathlib import Path
-
-from log_io.log_reader import LogReader
-
 from PyQt6.QtCore import pyqtSignal, QObject, pyqtSlot
-from PyQt6.QtWidgets import QApplication
 
 
 class DirMonitor(QObject):
@@ -17,22 +12,20 @@ class DirMonitor(QObject):
     QObject.__init__ ja on signaalit.
     """
 
-    new_content = pyqtSignal(str)
-
     def __init__(self, directory_path=None, filenames=None, event_handler=None):
         super().__init__()
-        self.observer = ObserverWrapper()
+        self.observer = Observer()
+        # self.observer = ObserverWrapper()
         self.directory_path = directory_path
         self.filenames = filenames
         self.event_handler = event_handler
 
     def run(self):
-        print(f"dir_mon {self.event_handler=}")
-        print(f"dir_mon {self.directory_path=}")
         self.observer.schedule(
             event_handler=self.event_handler,
             path=self.directory_path
         )
+        # using ObserverWrapper in __init__
         # print(f"{self.observer.get_watches()}")
         self.observer.start()
 
@@ -47,6 +40,9 @@ class DirMonitor(QObject):
 
 
 class ObserverWrapper(Observer):
+    """
+    Wrapper class for watchdog.observer to get access to self._watches
+    """
     def __init__(self, **kwargs) -> None:
         super().__init__(*kwargs)
 
