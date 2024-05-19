@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QTextEdit, QWidget
-from PyQt6.QtCore import pyqtSlot, pyqtSignal
+from PyQt6.QtCore import pyqtSlot
 
 
 class LogTab(QTextEdit):

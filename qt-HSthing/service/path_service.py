@@ -1,9 +1,8 @@
 from pathlib import Path
-import json
+from PyQt6.QtCore import QObject
 
 from config import LOG_PATH
-
-from PyQt6.QtCore import QObject
+from io_functionality.fs_utils import cleanup, save_settings
 
 
 class PathService(QObject):
@@ -44,8 +43,11 @@ class PathService(QObject):
         return self._log_path
 
     def save_log_path(self):
+        """
+        passthru func to keep fs operations in fs_utils
+        :return:
+        """
         if self._log_path:
-            with open('settings.ini', 'w') as f:
-                f.write(json.dumps({'LOG_PATH': self._log_path}))
-            return True
+            return save_settings(self._log_path)
         return False
+

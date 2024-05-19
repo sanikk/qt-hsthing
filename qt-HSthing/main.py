@@ -1,14 +1,14 @@
 import sys
 
-from PyQt6 import QtWidgets
+from PyQt6.QtWidgets import QApplication
 
-from ui.ui import TabWindow
+from UI.ui import TabWindow
 from service.path_service import PathService
 from service.log_service import LogService
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     # make output unbuffered
     sys.stdout.reconfigure(line_buffering=True)
 

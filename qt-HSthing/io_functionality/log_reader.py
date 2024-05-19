@@ -17,9 +17,11 @@ class LogReader:
         self._tuples = None
 
     def read_log_file(self, filepath: str):
-        # path = Path(filepath)
+        path = Path(filepath)
+        print(f"read_log {filepath=}")
         with open(filepath) as f:
             content = f.read()
+            print(f"readlog {content=}")
         with open(filepath, 'w') as f:
             f.write('')
         return content

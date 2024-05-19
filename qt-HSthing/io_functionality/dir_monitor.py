@@ -14,8 +14,8 @@ class DirMonitor(QObject):
 
     def __init__(self, directory_path=None, filenames=None, event_handler=None):
         super().__init__()
-        self.observer = Observer()
-        # self.observer = ObserverWrapper()
+        # self.observer = Observer()
+        self.observer = ObserverWrapper()
         self.directory_path = directory_path
         self.filenames = filenames
         self.event_handler = event_handler
@@ -26,7 +26,7 @@ class DirMonitor(QObject):
             path=self.directory_path
         )
         # using ObserverWrapper in __init__
-        # print(f"{self.observer.get_watches()}")
+        print(f"{self.observer.get_watches()}")
         self.observer.start()
 
     def stop_reading(self):
