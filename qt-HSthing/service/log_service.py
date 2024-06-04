@@ -1,14 +1,14 @@
-from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 from pathlib import Path
+from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 
 from io_functionality.dir_monitor import DirMonitor
+from io_functionality.fs_utils import cleanup
 from io_functionality.log_reader import LogReader
 from io_functionality.qfilesystemeventhandler import QFileSystemEventHandler
-from io_functionality.fs_utils import cleanup
+from service.log_processor import LogProcessor
 
 
 class LogService(QObject):
-
     content_ready = pyqtSignal()
 
     def __init__(self):
@@ -19,6 +19,7 @@ class LogService(QObject):
         # convenience variable to store path with pyqtSlot-connected setter
         self.fetch_path = None
         self.event_handler = None
+        self.log_processor = LogProcessor()
 
     def start_reading(self, subdir_path: str = None):
         if not subdir_path:
@@ -49,4 +50,13 @@ class LogService(QObject):
         self.event_handler.blockSignals(True)
         data = self.log_reader.read_log_file(self.fetch_path)
         self.event_handler.blockSignals(False)
-        return data
+        with open('raw_input.txt', 'a') as f:
+            f.write(data)
+        filtered = [self.log_processor.rough_cut(line) for line in data.split("\n")]
+        filtered = [self.log_processor.match_case_version(line) for line in data.split("\n")]
+        cleaner = [part for part in filtered if part]
+        joined = "\n".join(cleaner)
+        with open('output.txt', 'a') as f:
+            f.write(joined)
+
+        return filtered

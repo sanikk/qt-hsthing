@@ -29,5 +29,6 @@ class LogTab(QTextEdit):
     @pyqtSlot()
     def more_content(self):
         content = self._log_service.fetch()
-        self.insertPlainText(content)
+        for line in content:
+            self.insertPlainText(line)
 
